@@ -14,7 +14,7 @@ public class OwnHashTable implements HandMadeCollection {
     }
 
     private int hash(String word, int entry) {
-        int hashWord = word.hashCode();
+        int hashWord = (word.hashCode() * word.length()) % size;
         return (hashWord + (entry * entry)) % size;
     }
 
@@ -26,7 +26,10 @@ public class OwnHashTable implements HandMadeCollection {
         }
 
         newTable = table.clone();
-        size = size * 2;
+        
+        int newSize = size * 2;
+        size = newSize;
+        
         table = new String[size];
 
         for (int i = 0; i < size; i++) {
@@ -34,8 +37,29 @@ public class OwnHashTable implements HandMadeCollection {
         }
 
         for (String word : newTable) {
+            
             if (word != null && !word.equals("DELETED")) {
-                add(word);
+                
+                 int entry = 0;
+
+        do {
+            int hash = hash(word, entry);
+
+            if (table[hash] == null) {
+                table[hash] = word;
+                rehashSize++;
+                
+                break;
+            }
+            if (table[hash].equals(word)) {
+                
+                break;
+            }
+
+            entry++;
+
+        } while (entry < size);
+
             }
         }
     }
@@ -43,15 +67,16 @@ public class OwnHashTable implements HandMadeCollection {
     @Override
     public void add(String word) {
         int entry = 0;
+
         do {
             int hash = hash(word, entry);
-            
+
             if (table[hash] == null) {
                 table[hash] = word;
                 System.out.println("OK");
                 rehashSize++;
-                if (rehashSize > size * 0.75f) {
-                    rehash();
+                if ((float)rehashSize > size * 0.75f) {
+                   rehash();
                 }
                 return;
             }
@@ -59,13 +84,13 @@ public class OwnHashTable implements HandMadeCollection {
                 System.out.println("FAIL");
                 return;
             }
-            
+
             entry++;
-            
+
         } while (entry < size);
 
         // hash table is full
-        throw new RuntimeException("Hash table need resize");
+        //throw new RuntimeException("Hash table need resize");
 
     }
 
@@ -77,14 +102,14 @@ public class OwnHashTable implements HandMadeCollection {
             if (table[hash] == null) {
                 System.out.println("FAIL");
                 return;
-            } 
-                if (table[hash].equals(word)) {
-                    table[hash] = "DELETED";
-                    System.out.println("OK");
-                    return;
-                }
-                entry++;
-            
+            }
+            if (table[hash].equals(word)) {
+                table[hash] = "DELETED";
+                System.out.println("OK");
+                return;
+            }
+            entry++;
+
         } while (entry < size);
     }
 
@@ -95,18 +120,18 @@ public class OwnHashTable implements HandMadeCollection {
         do {
             int hash = hash(word, entry);
             if (table[hash] == null) {
-                
+
                 return false;
-                
+
             } else {
                 if (table[hash].equals(word)) {
-                  
+
                     return true;
                 }
                 entry++;
             }
         } while (entry < size);
-        
+
         return false;
     }
 
