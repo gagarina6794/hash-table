@@ -2,7 +2,7 @@ package main;
 
 public class OwnHashTable implements HandMadeCollection {
 
-    private int size = 10;
+    private int size = 8;
     private String[] table = new String[size];
     private String[] newTable = new String[size];
     private int rehashSize = 0;
@@ -45,8 +45,10 @@ public class OwnHashTable implements HandMadeCollection {
         int entry = 0;
         do {
             int hash = hash(word, entry);
+            
             if (table[hash] == null) {
                 table[hash] = word;
+                System.out.println("OK");
                 rehashSize++;
                 if (rehashSize > size * 0.75f) {
                     rehash();
@@ -54,10 +56,12 @@ public class OwnHashTable implements HandMadeCollection {
                 return;
             }
             if (table[hash].equals(word)) {
+                System.out.println("FAIL");
                 return;
             }
+            
             entry++;
-
+            
         } while (entry < size);
 
         // hash table is full
@@ -71,13 +75,16 @@ public class OwnHashTable implements HandMadeCollection {
         do {
             int hash = hash(word, entry);
             if (table[hash] == null) {
+                System.out.println("FAIL");
                 return;
-            } else {
+            } 
                 if (table[hash].equals(word)) {
                     table[hash] = "DELETED";
+                    System.out.println("OK");
+                    return;
                 }
                 entry++;
-            }
+            
         } while (entry < size);
     }
 
@@ -88,16 +95,18 @@ public class OwnHashTable implements HandMadeCollection {
         do {
             int hash = hash(word, entry);
             if (table[hash] == null) {
+                
                 return false;
+                
             } else {
                 if (table[hash].equals(word)) {
-
+                  
                     return true;
                 }
                 entry++;
             }
         } while (entry < size);
-
+        
         return false;
     }
 
